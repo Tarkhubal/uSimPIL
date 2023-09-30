@@ -1,7 +1,8 @@
 from .image import (
-    open,
+    open, merge,
     Image,
     Corners,
+    Circle,
     # Borders,
     # Merge,
     # MergeImages

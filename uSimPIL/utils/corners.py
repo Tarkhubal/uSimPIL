@@ -29,3 +29,25 @@ def round_corners(image: PILImage.Image, radius, corners=[True, True, True, True
 
     image.putalpha(alpha)
     return image
+
+def circle_from_center(image: PILImage.Image, radius: int):
+    """
+    Create a circle from the center of an image
+
+    Attributes
+    ----------
+     - radius (int) : The radius of the circle
+    """
+    if radius <= 0:
+        radius = min(image.size[0] // 2, image.size[1] // 2)
+    
+    width, height = image.size
+    position = (width // 2, height // 2)  # center of the image
+
+    circle = PILImage.new('L', (width, height), 0)
+    draw = PILImageDraw.Draw(circle)
+    draw.ellipse((position[0] - radius, position[1] - radius, position[0] + radius, position[1] + radius), fill=255)
+
+    result = PILImage.new('RGBA', (width, height))
+    result.paste(image, mask=circle)
+    return result

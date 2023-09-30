@@ -6,25 +6,46 @@ from ..operations import *
 def open(path: str):
     return Image(image=path)
 
+def new(size: Tuple[int, int], color: Tuple[int, int, int, int] = (255, 255, 255, 255)):
+    """Create a new image"""
+    return Image(PILImage.new("RGBA", size, color))
 
-class Modifications:
-    def __init__(self):
-        self.operations = []
+def _convert(image: Union[str, "Image", PILImage.Image]):
+    if isinstance(image, str):
+        image = PILImage.open(image)
+        if image.mode != "RGBA":
+            image = image.convert("RGBA")
+        return image
+    elif isinstance(image, PILImage.Image):
+        if image.mode != "RGBA":
+            image = image.convert("RGBA")
+        return image
+    elif isinstance(image, Image):
+        return image.image
+    else:
+        raise TypeError(f'"{type(image)}" is not a valid image type. Must be a string, PIL.Image or SimPIL.Image')
+
+def merge(image: "Image", item: Union["Circle", "Corners"]):
+    return Image(image, image.operations + item.operations)
+
+
+class OperationsSystem:
+    def __init__(self, operations: List[Operation] = []):
+        self.operations: List[Operation] = operations
+
+    def __repr__(self):
+        return f"<OperationsSystem operations={self.operations}>"
+
+
 
 class Image:
     def __init__(self, image: Union[str, "Image", PILImage.Image], operations: List[Operation] = []):
-        if isinstance(image, str):
-            self.image = PILImage.open(image)
-        elif isinstance(image, PILImage.Image):
-            self.image = image
-        elif isinstance(image, Image):
-            self.image = image.image
-        
+        self.image = _convert(image)
         self.operations = operations
-        self.corners = Corners(self)
         
-        # self.borders = Borders(self)
-
+        self.corners = Corners(operations, self)
+        self.circle_crop = self.circle = Circle(self.operations)
+    
     def __repr__(self):
         return f"<Image image={self.image} operations={self.operations}>"
         
@@ -41,16 +62,14 @@ class Image:
         for operation in self.operations:
             # self.image.show() # DEBUG
             self.image = operation.execute(self.image)
-    
 
 
 
-class Corners:
-    def __init__(self, image: "Image"):
+class Corners(OperationsSystem):
+    def __init__(self, operations: List[Operation] = [], image: "Image" = None):
         self.image = image
-        
-        self.operations: List[RoundCornersOperation] = image.operations
-        
+        super().__init__(operations)
+    
     def roundall(self, radius: int):
         """
         Round the corners of an image
@@ -60,8 +79,9 @@ class Corners:
         - radius (int) : The radius to use for the rounded corners (0 = square corners)
         """
         self.operations.append(RoundCornersOperation(radius, [True, True, True, True]))
+        if self.image:
+            return Image(self.image, self.operations)
         return Image(self.image, self.operations)
-
     
     def round(self, radius: int, corners: List[bool] = [True, True, True, True]):
         """
@@ -73,13 +93,17 @@ class Corners:
          - corners (list[bool]) : A list of bools specifying which corners to round. The order is top-left, top-right, bottom-left, bottom-right.
         """
         self.operations.append(RoundCornersOperation(radius, corners))
+        if self.image:
+            return Image(self.image, self.operations)
         return Image(self.image, self.operations)
-    
+
     def squareall(self):
         """
         Square all corners of an image
         """
-        self.operations.append(SquareCornersOperation([True, True, True, True]))
+        self.operations.append(RoundCornersOperation(0, [True, True, True, True]))
+        if self.image:
+            return Image(self.image, self.operations)
         return Image(self.image, self.operations)
     
     def square(self, corners: List[bool] = [True, True, True, True]):
@@ -90,20 +114,49 @@ class Corners:
         ----------
          - corners (list[bool]) : A list of bools specifying which corners to square. The order is top-left, top-right, bottom-left, bottom-right.
         """
-        self.operations.append(SquareCornersOperation(corners))
+        self.operations.append(RoundCornersOperation(0, corners))
+        if self.image:
+            return Image(self.image, self.operations)
         return Image(self.image, self.operations)
+
+    def circle_from_center(self, radius: int = 0):
+        """
+        Create a circle from the center of an image
+
+        Attributes
+        ----------
+         - radius (int) : The radius of the circle
+        """
+        self.operations.append(CircleFromCenterOperation(radius))
+        if self.image:
+            return Image(self.image, self.operations)
+        return Image(self.image, self.operations)
+
+
+class Circle(OperationsSystem):
+    def __init__(self, operations: List[Operation] = [], image: "Image" = None):
+        self.image = image
+        super().__init__(operations)
+    
+    def from_center(self, radius: int = 0):
+        """
+        Create a circle from the center of an image
+
+        Attributes
+        ----------
+        - radius (int) : The radius of the circle
+        """
+        self.operations.append(CircleFromCenterOperation(radius))
+        if self.image:
+            return Image(self.image, self.operations)
+        return self
 
 
 # class MergeImages:
 #     def __init__(self, images: List[Union[str, PILImage.Image, "Image"]], direction: str = "horizontal"):
 #         self.images = []
 #         for image in images:
-#             if isinstance(image, str):
-#                 self.images.append(PILImage.open(image))
-#             elif isinstance(image, PILImage.Image):
-#                 self.images.append(image)
-#             elif isinstance(image, Image):
-#                 self.images.append(image.image)
+#             self.images.append(_convert(image))
         
 #         self.direction = direction
     
