@@ -20,4 +20,4 @@ if __name__ == "__main__":
 ```
 
 ## How it works
-If you are interested in how it works but don't understand, basically I have the basic classes for image editing (e.g. modifying corners, borders, etc.) in /classes/image. py ; these classes (and functions) generate specific Operations (found in /operations.py) which will use functions from /utils/*
+If you are interested in how it works but don't understand, basically I have the basic classes for image editing (e.g. modifying corners, borders, etc.) in /classes/image.py ; these classes (and functions) generate specific `Operations` (found in /operations.py) which will use functions from /utils/*
