@@ -1,16 +1,16 @@
-# SimPIL
-A simplified version of Pillow
+# uSimPIL
+A ultra simplified version of Pillow
 
 
 At the moment you can only modify the angles (rounded or squared) of an image (see examples/Round corners/example.py)
 
 Example :
 ```py
-import SimPIL
+import uSimPIL
 
 
 if __name__ == "__main__":
-    img = SimPIL.open("before.png")
+    img = uSimPIL.open("before.png")
     
     img.corners.roundall(50)
     
