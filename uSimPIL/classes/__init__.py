@@ -7,4 +7,4 @@ from .image import (
     # Merge,
     # MergeImages
 )
-# from .text import Text
+from .text import Text
