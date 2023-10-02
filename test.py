@@ -1,7 +1,7 @@
 import uSimPIL
 
-img = uSimPIL.open("before.png")
-img.corners.roundall(100)
+# img = uSimPIL.open("before.png")
+# img.corners.roundall(100)
 
 
 
@@ -16,11 +16,28 @@ img.corners.roundall(100)
 # img.create()
 # img.view()
 
-text = Text("Bonjour")
+text = uSimPIL.Text("Bonjour")
 
-text.font.weight
+text.font.poppins
+
+print(text.font.font)
+
+text.font.weight.bold()
+
+print(text.font.weight.weight)
+
+font = uSimPIL.Font()
+font.calibri
+font.weight.ultra_bold()
+
+print(font.font)
+print(font.weight.weight)
+
+text = text.merge(font)
+
+print(text.font.font)
 
 
 
-img.create()
-img.view()
+# img.create()
+# img.view()

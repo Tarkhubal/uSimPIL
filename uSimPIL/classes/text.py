@@ -1,23 +1,45 @@
-from typing import Union, Tuple, List, Dict, Any
+from typing import Union, Tuple, List, Dict, Any, Optional, Literal
 
 from ..operations import *
 
 from .image import Image
 
 
-
 class Text:
-    def __init__(self, text: str = "", operations: List[Operation] = []):
-        self.text = ""
-        self.operations = operations
+    def __init__(self, text: Union[str, "Text"] = "", operations: List[Operation] = []):
+        if isinstance(text, Text):
+            self.text = text.text
+            self.operations = text.operations
+        elif isinstance(text, str):
+            self.text = text
+            self.operations = operations
+        else:
+            raise TypeError(f'"{type(text)}" is not a valid text type. Must be a string or uSimPIL.Text')
 
-        self.font = Font()
-        self.color = Color()
+        self.font = Font(self.operations, self)
+        # self.color = Color()
 
         self.pos = (0, 0) # (x_pos, y_pos)
     
     def center(self):
         self.pos = ("center", "center")
+    
+    def merge(self, item: Union["Font", "FontWeight"]):
+        if isinstance(item, Font):
+            self.operations += item.operations
+            self.font = item
+        elif isinstance(item, FontWeight):
+            self.operations += item.operations
+            try:
+                if self.font is None:
+                    self.font = Font(self.operations, self)
+            except AttributeError:
+                self.font = Font(self.operations, self)
+            self.font.weight = item
+        else:
+            raise TypeError(f'"{type(item)}" is not a valid merge type. Must be a uSimPIL.Font or uSimPIL.FontWeight')
+
+        return self
     
     def y_pos(self, pos: Optional[Union[str, int]]):
         """Return the y_pos if no "pos" is provided else set y position to "pos"
@@ -61,52 +83,56 @@ class Text:
         return f"<Text text={self.text} operations={self.operations}>"
 
 
-class Font:
-    def __init__(self):
+class Font(OperationsSystem):
+    def __init__(self, operations: List[Operation] = [], text: Text = None):
+        self.text = text
+        self.operations = operations
         self.font = "Arial"
         self.weight = FontWeight()
 
     @property
     def poppins(self):
         self.font = "Poppins"
+        return self
     
     @property
     def calibri(self):
         self.font = "Calibri"
+        return self
 
 
-class Color:
-    def __init__(self):
-        self.colors = {
-            "black": "#000000",
-            "red": "#ff0000",
-            "white": "#ffffff",
-            "blue": "#0000ff",
-            "green": "#00ff00"
-        }
+# class Color:
+#     def __init__(self):
+#         self.colors = {
+#             "black": "#000000",
+#             "red": "#ff0000",
+#             "white": "#ffffff",
+#             "blue": "#0000ff",
+#             "green": "#00ff00"
+#         }
 
-        self.choosed_color = self.colors["black"]
+#         self.choosed_color = self.colors["black"]
     
-    def _set_color(self, key: str, value: str):
-        if not isinstance(key, str):
-            raise TypeError(f'"key" element must be a string, not {type(key)}')
-        if not isinstance(value, str):
-            raise TypeError(f'the color element must be a string, not {type(value)}')
-        if not value.startswith("#") or len(value) < 7 or len(value) > 9:
-            raise ValueError(f'the color element must be a hexadecimal code, like this : "#RRGGBBTT" (r = red, g = green, b = blue, t = transparency (ff = fully visible) (optional)). It must starts with "#"')
+#     def _set_color(self, key: str, value: str):
+#         if not isinstance(key, str):
+#             raise TypeError(f'"key" element must be a string, not {type(key)}')
+#         if not isinstance(value, str):
+#             raise TypeError(f'the color element must be a string, not {type(value)}')
+#         if not value.startswith("#") or len(value) < 7 or len(value) > 9:
+#             raise ValueError(f'the color element must be a hexadecimal code, like this : "#RRGGBBTT" (r = red, g = green, b = blue, t = transparency (ff = fully visible) (optional)). It must starts with "#"')
 
 
-        self.colors["key"] = value
+#         self.colors["key"] = value
 
             
 
-    @property
-    def red(self):
-        self.choosed_color = self.colors["red"]
+#     @property
+#     def red(self):
+#         self.choosed_color = self.colors["red"]
     
-    @red.setter
-    def red(self, value: str):
-        self._set_color("red", )
+#     @red.setter
+#     def red(self, value: str):
+#         self._set_color("red", )
     
 
 
@@ -118,19 +144,29 @@ class Color:
 
 
 
-class FontWeight:
-    def __init__(self):
-        self.weight = 300
+class FontWeight(OperationsSystem):
+    def __init__(self, operations: List[Operation] = [], font: Font = None):
+        self.font = font
+        self.operations = operations
+        self.weight = 400
     
     def regular(self):
         self.weight = 300
+        
+        return self
     
     def bold(self):
         self.weight = 600
+        return self
     
     def ultra_bold(self):
         self.weight = 900
-    
-    def fine(self):
-        self.weight = 100
+        return self
 
+    def thin(self):
+        self.weight = 200
+        return self
+    
+    def custom(self, weight: int):
+        self.weight = weight
+        return self

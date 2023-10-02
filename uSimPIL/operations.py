@@ -14,6 +14,13 @@ class Operation:
         return f"<Operation>"
 
 
+class OperationsSystem:
+    def __init__(self, operations: List[Operation] = []):
+        self.operations: List[Operation] = operations
+
+    def __repr__(self):
+        return f"<OperationsSystem operations={self.operations}>"
+
 
 class RoundCornersOperation(Operation):
     def __init__(self, radius: int, corners: List[bool]):

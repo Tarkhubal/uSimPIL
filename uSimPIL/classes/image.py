@@ -29,14 +29,6 @@ def merge(image: "Image", item: Union["Circle", "Corners"]):
     return Image(image, image.operations + item.operations)
 
 
-class OperationsSystem:
-    def __init__(self, operations: List[Operation] = []):
-        self.operations: List[Operation] = operations
-
-    def __repr__(self):
-        return f"<OperationsSystem operations={self.operations}>"
-
-
 
 class Image:
     def __init__(self, image: Union[str, "Image", PILImage.Image], operations: List[Operation] = []):
