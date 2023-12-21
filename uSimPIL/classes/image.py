@@ -2,6 +2,7 @@ from PIL import Image as PILImage, ImageDraw as PILImageDraw
 from typing import Union, Tuple, List, Dict, Any
 
 from ..operations import *
+from .text import Text
 
 def open(path: str):
     return Image(image=path)
@@ -25,8 +26,13 @@ def _convert(image: Union[str, "Image", PILImage.Image]):
     else:
         raise TypeError(f'"{type(image)}" is not a valid image type. Must be a string, PIL.Image or SimPIL.Image')
 
-def merge(image: "Image", item: Union["Circle", "Corners"]):
-    return Image(image, image.operations + item.operations)
+def merge(image: "Image", item: Union["Circle", "Corners", "Text"]):
+    if isinstance(item, Circle):
+        return Image(image, image.operations + item.operations)
+    elif isinstance(item, Corners):
+        return Image(image, image.operations + item.operations)
+    elif isinstance(item, Text):
+        
 
 
 

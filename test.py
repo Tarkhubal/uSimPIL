@@ -19,11 +19,9 @@ import uSimPIL
 text = uSimPIL.Text("Bonjour")
 
 text.font.poppins
-
-print(text.font.font)
-
 text.font.weight.bold()
 
+print(text.font.font)
 print(text.font.weight.weight)
 
 font = uSimPIL.Font()

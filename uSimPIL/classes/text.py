@@ -20,8 +20,9 @@ class Text:
         self.color = Color()
 
         self.position = (0, 0) # (x_pos, y_pos)
+        return self
     
-    def new(text: str, font: str = "Arial", font_weight: int = 200, position: Tuple[Union[int, str]] = (0, 0)):
+    def new(text: str, font: str = "/fonts/poppins/poppins_{self.format}.ttf", font_weight: int = 200, position: Tuple[Union[int, str]] = (0, 0)):
         text = Text(text=text)
         text.font.custom(font)
         text.font.weight.custom(font_weight)
@@ -94,30 +95,29 @@ class Font(OperationsSystem):
     def __init__(self, operations: List[Operation] = [], text: Text = None):
         self.text = text
         self.operations = operations
-        self.font = "Arial"
+        self.font = "/fonts/poppins/poppins_{self.format}.ttf"
+        self.format = "regular"
         self.weight = FontWeight()
+        self.color = Color()
 
     @property
     def poppins(self):
-        self.font = "Poppins"
+        self.font = f"/fonts/poppins/poppins_{self.format}.ttf"
         return self
     
-    @property
-    def calibri(self):
-        self.font = "Calibri"
-        return self
+    # @property
+    # def calibri(self):
+    #     self.font = "Calibri"
+    #     return self
     
-    def from_path(path: str):
-        if not path.endswith(".woff"):
+    def custom(path: str):
+        """Path must be a font file"""
+        if not path.endswith(".woff") or not path.endswith(".woff2") or not path.endswith(".ttf") or not path.endswith(".otf"):
             raise ValueError("path must be a font file")
         
         font = Font()
         font.font = path
         return font
-    
-    def custom(self, font: str):
-        self.font = font
-        return self
 
 
 class Color:
