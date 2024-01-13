@@ -4,7 +4,6 @@ import uSimPIL
 # img.corners.roundall(100)
 
 
-
 # # is equivalent to this program:
 # img = uSimPIL.open("before.png")
 
@@ -16,27 +15,25 @@ import uSimPIL
 # img.create()
 # img.view()
 
-text = uSimPIL.Text("Bonjour")
-
-text.font.poppins
-text.font.weight.bold()
-
-print(text.font.font)
-print(text.font.weight.weight)
+img = uSimPIL.open("before.png")
+text = uSimPIL.Text("Hello world !")
 
 font = uSimPIL.Font()
-font.calibri
-font.weight.ultra_bold()
+font.size.custom(90)
 
-print(font.font)
-print(font.weight.weight)
+text.merge(font)
+text.font.weight.bold()
+text.center()
 
-text = text.merge(font)
+print(text)
+img = uSimPIL.merge(img, text)
+img.corners.roundall(50)
 
-print(text.font.font)
+# Add another text
+text2 = uSimPIL.Text("Oh hayo !")
+text2.font.size.custom(90)
+img.merge(text2)
 
-
-
-# img.create()
-# img.view()
-
+print(img.operations)
+img.create()
+img.view()

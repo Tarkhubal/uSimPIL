@@ -1,7 +1,6 @@
 from typing import Union, Tuple, List, Dict, Any, Optional, Literal
 
 from ..operations import *
-from .image import Image
 
 
 
@@ -20,17 +19,25 @@ class Text:
         self.color = Color()
 
         self.position = (0, 0) # (x_pos, y_pos)
-        return self
     
-    def new(text: str, font: str = "/fonts/poppins/poppins_{self.format}.ttf", font_weight: int = 200, position: Tuple[Union[int, str]] = (0, 0)):
+    def __str__(self):
+        return self.text
+    
+    def __repr__(self):
+        return f"<Text text={self.text} operations={self.operations}>"
+
+    
+    def new(text: str, font: str = None, font_weight: int = 200, position: Tuple[Union[int, str]] = (0, 0)):
         text = Text(text=text)
+        if font is None:
+            font = f"uSimPIL/fonts/poppins/poppins_regular.ttf"
         text.font.custom(font)
         text.font.weight.custom(font_weight)
         text.position = position
         return text
 
     def center(self):
-        self.pos = ("center", "center")
+        self.position = ("center", "center")
     
     def merge(self, item: Union["Font", "FontWeight"]):
         if isinstance(item, Font):
@@ -57,7 +64,7 @@ class Text:
         if pos is None:
             return self.position[1]
         else:
-            self.position = (self.position[0], pos)
+            self.position[1] = pos
     
     def x_pos(self, pos: Optional[Union[str, int]]):
         """Return the x_pos if no "pos" is provided else set x position to "pos"
@@ -67,7 +74,7 @@ class Text:
         if pos is None:
             return self.position[0]
         else:
-            self.position = (pos, self.position[1])
+            self.position[0] = pos
 
     def _h_align(self):
         self.position = ("center", self.position[1])
@@ -95,24 +102,28 @@ class Font(OperationsSystem):
     def __init__(self, operations: List[Operation] = [], text: Text = None):
         self.text = text
         self.operations = operations
-        self.font = "/fonts/poppins/poppins_{self.format}.ttf"
+        self.font = "uSimPIL/fonts/poppins/poppins_regular.ttf"
         self.format = "regular"
         self.weight = FontWeight()
         self.color = Color()
+        self.size = FontSize()
+
+    def __repr__(self):
+        return f"<Font font={self.font} operations={self.operations}>"
+    
+    def __str__(self):
+        return self.font
 
     @property
     def poppins(self):
-        self.font = f"/fonts/poppins/poppins_{self.format}.ttf"
+        self.font = f"uSimPIL\\fonts\\poppins\\\poppins_{self.format}.ttf"
         return self
-    
-    # @property
-    # def calibri(self):
-    #     self.font = "Calibri"
-    #     return self
     
     def custom(path: str):
         """Path must be a font file"""
-        if not path.endswith(".woff") or not path.endswith(".woff2") or not path.endswith(".ttf") or not path.endswith(".otf"):
+        raise NotImplementedError("not yet implemented, come back soon !")
+        
+        if not path.split(".")[-1] in ("woff", "ttf", "woff2", "otf"):
             raise ValueError("path must be a font file")
         
         font = Font()
@@ -130,7 +141,7 @@ class Color:
             "green": "#00ff00"
         }
 
-        self.choosed_color = self.colors["black"]
+        self.color = self.colors["black"]
     
     def _set_color(self, key: str, value: str):
         if not isinstance(key, str):
@@ -147,7 +158,7 @@ class Color:
 
     @property
     def red(self):
-        self.choosed_color = self.colors["red"]
+        self.color = self.colors["red"]
     
     @red.setter
     def red(self, value: str):
@@ -159,6 +170,13 @@ class Color:
 # Add a system to generate properties based on the dict colors
 
 
+class FontSize:
+    def __init__(self, size: int = None):
+        self.size: int = size if size is not None else 18
+    
+    def custom(self, size: int):
+        self.size = size
+
 
 
 
@@ -168,6 +186,12 @@ class FontWeight(OperationsSystem):
         self.font = font
         self.operations = operations
         self.weight = 400
+    
+    def __repr__(self):
+        return f"<FontWeight weight={self.weight} operations={self.operations}>"
+    
+    def __str__(self):
+        return str(self.weight)
     
     def regular(self):
         self.weight = 300

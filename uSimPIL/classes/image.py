@@ -27,12 +27,20 @@ def _convert(image: Union[str, "Image", PILImage.Image]):
         raise TypeError(f'"{type(image)}" is not a valid image type. Must be a string, PIL.Image or SimPIL.Image')
 
 def merge(image: "Image", item: Union["Circle", "Corners", "Text"]):
+    return Image(image, image.operations + get_ops(item))
+
+
+def get_ops(item: Any):
     if isinstance(item, Circle):
-        return Image(image, image.operations + item.operations)
+        return item.operations
     elif isinstance(item, Corners):
-        return Image(image, image.operations + item.operations)
+        return item.operations
     elif isinstance(item, Text):
-        
+        return [TextOperation(
+            item.text, item.position, item.font.font,
+            item.color.color, item.font.weight.weight,
+            item.font.size.size
+        )]
 
 
 
@@ -60,6 +68,9 @@ class Image:
         for operation in self.operations:
             # self.image.show() # DEBUG
             self.image = operation.execute(self.image)
+    
+    def merge(self, item):
+        self.operations += get_ops(item)
 
 
 
