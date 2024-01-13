@@ -19,6 +19,7 @@ img = uSimPIL.open("before.png")
 text = uSimPIL.Text("Hello world !")
 
 font = uSimPIL.Font()
+font.poppins
 font.size.custom(90)
 
 text.merge(font)
@@ -32,6 +33,8 @@ img.corners.roundall(50)
 # Add another text
 text2 = uSimPIL.Text("Oh hayo !")
 text2.font.size.custom(90)
+text2.position = (0, "center")
+text2.font.arial
 img.merge(text2)
 
 print(img.operations)

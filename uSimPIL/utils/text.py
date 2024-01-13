@@ -1,17 +1,16 @@
+from typing import Tuple, Union
 from PIL import (
     Image as PILImage,
     ImageDraw as PILImageDraw,
     ImageFont
 )
-from typing import Union, Tuple, List, Dict, Any
 
-import os
 
 def add_text(image: PILImage.Image,
              text: str,
              position: Union[Tuple[int, int], Tuple[str, str], Tuple[int, str], Tuple[str, int]],
-             font: str,
-             color: Tuple[int, int, int, int],
+             font: str = None,
+             color: Tuple[int, int, int, int] = (0, 0, 0, 255),
              weight: int = 400,
              size: int = 18
              ):
@@ -25,14 +24,24 @@ def add_text(image: PILImage.Image,
      - font (str) : The font to use
      - color (Tuple[int, int, int, int]) : The color of the text
     """
-    img_x, img_y = image.size
+    if font is None:
+        font = ImageFont.load_default(size=size)
+    else:
+        font = ImageFont.truetype(font, size=size)
+
     position = list(position)
     if position[0] == "center":
-        position[0] = img_x // 2
-    if position[1] == "center":
-        position[1] = img_y // 2
+        W, H = image.size
+        draw = PILImageDraw.Draw(PILImage.new('RGB', image.size))
+        _, _, w, h = draw.textbbox((0, 0), text, font=font)
+        position[0] = (W - w) / 2
     
-    font = ImageFont.load_default(size=size)
+    if position[1] == "center":
+        W, H = image.size
+        draw = PILImageDraw.Draw(PILImage.new('RGB', image.size))
+        _, _, w, h = draw.textbbox((0, 0), text, font=font)
+        position[1] = (H - h) / 2
+
     draw = PILImageDraw.Draw(image)
     draw.text(position, text, font=font, fill=color)
     return image

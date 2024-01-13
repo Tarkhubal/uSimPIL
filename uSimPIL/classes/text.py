@@ -116,7 +116,12 @@ class Font(OperationsSystem):
 
     @property
     def poppins(self):
-        self.font = f"uSimPIL\\fonts\\poppins\\\poppins_{self.format}.ttf"
+        self.font = f"uSimPIL\\fonts\\poppins\\poppins_{self.format}.ttf"
+        return self
+    
+    @property
+    def arial(self):
+        self.font = f"uSimPIL\\fonts\\arial_{self.format}.ttf"
         return self
     
     def custom(path: str):
