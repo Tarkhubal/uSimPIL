@@ -1,2 +1,1 @@
 Can't load a custom font file (go docs)
-Début de truc pour le text center mais il centre sur l'angle en haut à gauche
